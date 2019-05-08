@@ -2,10 +2,10 @@
 
 > A no-nonense real-time analytics database written in Node.js that takes events from all over your application and allows you perform complex analytic queries in a very simple fashion.
 
-
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
 > At the moment this is a very-early proof of concept database. Ideas, concepts etc are documented below, and any contribution is welcome. This is a very opionionated concept for how an analytics database could / should work, so any ideas/support would be fanastic.
+
 ---
 
 ## A brief history
@@ -23,15 +23,16 @@
 > Events will be able to added to the database through an HTTP endpoint, and they should be in JSON format.
 
 E.g.
+
 ```
 [{
   "event": {
     "action": "userRegistered",
     "when": "2019-05-05T11:27:03.000Z"
   },
-  "service: {
+  "service": {
     "name": "users-api",
-    "type: "api"
+    "type": "api"
   },
   "user": {
      "id": 123,
@@ -45,9 +46,9 @@ E.g.
     "action": "userLoggedIn",
     "when": "2019-05-05T14:22:32.000Z"
   },
-  "service: {
+  "service": {
     "name": "users-api",
-    "type: "api"
+    "type": "api"
   },
   "user": {
      "id": 123
@@ -55,8 +56,8 @@ E.g.
   "location": {
     "ip": "123.123.123.123",
     "geo": {
-      lat: 52.123,
-      lng: -1.234
+      "lat": 52.123,
+      "lng": -1.234
     }
   }
 }]
@@ -92,6 +93,7 @@ In the example above you can see two events, one is fired when a user registers 
 
 Once we have populated some entities we can start to perform analytic queries and aggregations on them.
 E.g.
+
 - Count all the users who registered in the last year
 - Count all the users who registered but never logged in
 - Find all the users who logged in from London
@@ -103,6 +105,7 @@ E.g.
 With all the entities being structured in a consistent fashion means the database is able to understand meaning of certain fields, and also understand how different entities link to each other. For example, the user entity shown above has a user id, and if you had another entity called 'purchases', with a user id in it, the database can create a relationship between the two. This will be achieved by building a graph of relationships, and allow more advanced queries.
 
 E.g.
+
 - Find all users who purchased 2 or more products
 - Find all users who purchased a specific product
 - Find all users who bought the same 3 products, and get a list of other products that they purchased at the same time (recommendation search)
@@ -123,10 +126,10 @@ My plan so far is to break the database into different responsibilities:
   - DevOps dashboard to see database performance and modify settings
   - Maybe a Kibana style tool to allow querying the database and produce charts
 
-
 ## Tests
 
 > Tests will be written in Jest and Typescript
+
 ---
 
 ## License
