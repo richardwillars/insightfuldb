@@ -41,7 +41,9 @@ const chartProps = {
     })
     .when(Joi.ref("type"), {
       is: "significantTerms",
-      then: Joi.number().min(1),
+      then: Joi.number()
+        .min(1)
+        .required(),
       otherwise: Joi.forbidden()
     }),
   order: Joi.any().when(Joi.ref("type"), {
@@ -268,24 +270,53 @@ module.exports = async (req, res) => {
     let xBuckets = {};
     let xBucketKeys = {};
     let totalXBuckets = 0;
-    if (query.x.type === "histogram") {
-      for (let i = min; i <= max; i += query.x.minimumInterval) {
-        xBuckets[i] = [];
-      }
-      xBucketKeys = Object.keys(xBuckets);
-      totalXBuckets = xBucketKeys.length;
-      records.forEach(record => {
-        for (let i = 0; i < totalXBuckets; i += 1) {
-          if (record.tmpX >= xBucketKeys[i]) {
-            if (
-              !xBucketKeys[i + 1] ||
-              (xBucketKeys[i + 1] && record.tmpX < xBucketKeys[i + 1])
-            ) {
-              xBuckets[xBucketKeys[i]].push(record);
+
+    switch (query.x.type) {
+      case "histogram":
+        for (let i = min; i <= max; i += query.x.minimumInterval) {
+          xBuckets[i] = [];
+        }
+        xBucketKeys = Object.keys(xBuckets);
+        totalXBuckets = xBucketKeys.length;
+        records.forEach(record => {
+          for (let i = 0; i < totalXBuckets; i += 1) {
+            if (record.tmpX >= xBucketKeys[i]) {
+              if (
+                !xBucketKeys[i + 1] ||
+                (xBucketKeys[i + 1] && record.tmpX < xBucketKeys[i + 1])
+              ) {
+                xBuckets[xBucketKeys[i]].push(record);
+              }
             }
           }
-        }
-      });
+        });
+        break;
+      case "terms":
+        records.forEach(record => {
+          if (!xBuckets[record.tmpX]) {
+            xBuckets[record.tmpX] = [];
+          }
+          xBuckets[record.tmpX].push(record);
+        });
+        xBucketKeys = Object.keys(xBuckets);
+        totalXBuckets = xBucketKeys.length;
+        break;
+      case "significantTerms":
+        records.forEach(record => {
+          if (!xBuckets[record.tmpX]) {
+            xBuckets[record.tmpX] = [];
+          }
+          xBuckets[record.tmpX].push(record);
+        });
+
+        Object.keys(xBuckets).forEach(key => {
+          if (xBuckets[key].length < parseInt(query.x.size, 10)) {
+            delete xBuckets[key];
+          }
+        });
+        xBucketKeys = Object.keys(xBuckets);
+        totalXBuckets = xBucketKeys.length;
+        break;
     }
     const chart = {};
     for (let i = 0; i < totalXBuckets; i += 1) {

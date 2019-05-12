@@ -36,7 +36,6 @@ const indexEvent = (event, collection, positionOfEventInStore) => {
       indexes[collection][key][flatEvent[key]] = [];
     }
     indexes[collection][key][flatEvent[key]].push(positionOfEventInStore);
-    console.log(indexTypes[key]);
     if (indexTypes[key] === "date") {
       const ordered = {};
       Object.keys(indexes[collection][key])
