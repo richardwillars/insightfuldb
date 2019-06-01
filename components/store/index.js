@@ -102,11 +102,14 @@ const api = {
   },
   getRecords: async (collection, from, to, where) => {
     //Get all the records indexes between the specific timestamps
-    const validTimestamps = Object.keys(
+    let validTimestamps = Object.keys(
       indexes[collection]["event.when"]
-    ).filter(timestamp => {
-      return timestamp >= from && timestamp <= to;
-    });
+    );
+    if(from) {
+      validTimestamps = validTimestamps.filter(timestamp => {
+        return timestamp >= from && timestamp <= to;
+      });
+    }
     let validIndexes = [[]];
     validIndexes[0] = validTimestamps.reduce(
       (a, b) => a.concat(indexes[collection]["event.when"][b]),
