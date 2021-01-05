@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "date-fns": "2.0.0-alpha.27",
     "elasticsearch": "^16.0.0",
     "express": "^4.16.4",
